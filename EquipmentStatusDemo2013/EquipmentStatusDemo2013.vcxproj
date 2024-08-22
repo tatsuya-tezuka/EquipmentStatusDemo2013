@@ -101,16 +101,20 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CustomDataManager.h" />
     <ClInclude Include="EquipmentStatusDemo2013.h" />
     <ClInclude Include="EquipmentStatusDemo2013Dlg.h" />
+    <ClInclude Include="Markup.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TemplateClass.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CustomDataManager.cpp" />
     <ClCompile Include="EquipmentStatusDemo2013.cpp" />
     <ClCompile Include="EquipmentStatusDemo2013Dlg.cpp" />
+    <ClCompile Include="Markup.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
