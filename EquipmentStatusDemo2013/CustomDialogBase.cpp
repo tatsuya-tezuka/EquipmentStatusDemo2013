@@ -1,6 +1,13 @@
 #include "stdafx.h"
 #include "CustomDialogBase.h"
 
+/*
+	◆使用方法
+	①通常通りダイログを作成する
+	②作成されたダイアログの基底クラスはCDialogExになっているので全てCCustomDialogBaseに変更する
+	③ダイアログ内でダイアログ枠のリサイズに同期させるにはOnInitDialog内で当クラスのSetControlInfo関数を使用する
+*/
+
 IMPLEMENT_DYNAMIC(CCustomDialogBase, CDialogEx)
 
 CCustomDialogBase::CCustomDialogBase(UINT IDD, CWnd* pParent /*=NULL*/)
@@ -27,6 +34,16 @@ BEGIN_MESSAGE_MAP(CCustomDialogBase, CDialogEx)
 	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
+/*============================================================================*/
+/*! CCustomDialogBase
+
+-# サイズ変更処理
+
+@breif	ダイアログのリサイズに同期して設定されたコントロールもリサイズを行う
+@param
+@retval
+*/
+/*============================================================================*/
 void CCustomDialogBase::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
@@ -90,7 +107,16 @@ void CCustomDialogBase::OnSize(UINT nType, int cx, int cy)
 	mSaveCy = cy;
 }
 
+/*============================================================================*/
+/*! CCustomDialogBase
 
+-# サイズ変更時の最大、最小サイズを決める
+
+@breif	ダイアログのリサイズ時の最小サイズを決定する
+@param
+@retval
+*/
+/*============================================================================*/
 void CCustomDialogBase::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
 	lpMMI->ptMinTrackSize.x = 200;

@@ -106,6 +106,7 @@
     <ClInclude Include="DebugDialog.h" />
     <ClInclude Include="EquipmentStatusDemo2013.h" />
     <ClInclude Include="EquipmentStatusDemo2013Dlg.h" />
+    <ClInclude Include="LogTraceEx.h" />
     <ClInclude Include="Markup.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -118,6 +119,7 @@
     <ClCompile Include="DebugDialog.cpp" />
     <ClCompile Include="EquipmentStatusDemo2013.cpp" />
     <ClCompile Include="EquipmentStatusDemo2013Dlg.cpp" />
+    <ClCompile Include="LogTraceEx.cpp" />
     <ClCompile Include="Markup.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

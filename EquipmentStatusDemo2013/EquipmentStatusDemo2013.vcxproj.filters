@@ -48,6 +48,9 @@
     <ClInclude Include="DebugDialog.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="LogTraceEx.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EquipmentStatusDemo2013.cpp">
@@ -72,6 +75,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="DebugDialog.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="LogTraceEx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
