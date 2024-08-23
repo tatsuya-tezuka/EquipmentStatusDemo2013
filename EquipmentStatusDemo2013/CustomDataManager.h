@@ -20,6 +20,7 @@ static const int mHeaderSize = 5;
 /// ファイル関連
 static const TCHAR* mAppDataSystem = { _T("NEC") };
 static const TCHAR* mAppDataDataPath = { _T("DATA") };
+static const TCHAR* mAppDataLogPath = { _T("LOG") };
 static const TCHAR* mAppSaveEquipmentFile = { _T("AppEquipment.xml") };
 
 /// カスタム画面関連
@@ -166,6 +167,8 @@ public:
 	}
 
 	/// ◆設備制御詳細画面レイアウト
+	bool	SaveTreeNode(CArchive& ar);
+	bool	LoadTreeNode(CArchive& ar);
 	bool	SaveTreeNodeXml(CMarkup& xml);
 	bool	LoadTreeNodeXml(CMarkup& xml);
 
@@ -173,8 +176,39 @@ protected:
 	void	deleteNode(CTreeNode* pnode);
 
 	/// ◆設備制御詳細画面レイアウト
-	bool	saveChildNodeXml(CMarkup& ar, CTreeNode* pnode);
-	bool	loadChildNodeXml(CMarkup& ar, CTreeNode* pnode);
+	//bool	saveChildNodeXml(CMarkup& ar, CTreeNode* pnode);
+	//bool	loadChildNodeXml(CMarkup& ar, CTreeNode* pnode);
+
+	/// CArchive
+	// 矩形の読込
+	void loadRect(CArchive& ar, RECT& rect)
+	{
+		ar >> rect.left;
+		ar >> rect.top;
+		ar >> rect.right;
+		ar >> rect.bottom;
+	}
+	// ポイントの読込
+	void loadPoint(CArchive& ar, POINT& point) const
+	{
+		ar >> point.x;
+		ar >> point.y;
+	}
+
+	// 矩形の保存
+	void saveRect(CArchive& ar, RECT& rect) const
+	{
+		ar << rect.left;
+		ar << rect.top;
+		ar << rect.right;
+		ar << rect.bottom;
+	}
+	// ポイントの保存
+	void savePoint(CArchive& ar, POINT& point) const
+	{
+		ar << point.x;
+		ar << point.y;
+	}
 
 	/// XML
 	// 矩形の読込
@@ -350,6 +384,8 @@ public:
 	bool	SetNodeColor(CWnd* pwnd, UINT type, UINT subtype, stColorData& color);
 
 	/// ◆設備制御詳細画面レイアウト
+	bool	SaveTreeData(CString strFile, CWnd* pTargetWnd = NULL);
+	bool	LoadTreeData(CString strFile, bool bClear);
 	bool	SaveTreeDataXml(CString strFile, CWnd* pTargetWnd = NULL);
 	bool	LoadTreeDataXml(CString strFile, bool bClear);
 

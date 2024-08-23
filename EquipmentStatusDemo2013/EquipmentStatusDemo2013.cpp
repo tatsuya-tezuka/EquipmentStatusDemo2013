@@ -70,6 +70,8 @@ BOOL CEquipmentStatusDemo2013App::InitInstance()
 	// この文字列を変更してください。
 	SetRegistryKey(_T("アプリケーション ウィザードで生成されたローカル アプリケーション"));
 
+	InitializeApp();
+
 	CEquipmentStatusDemo2013Dlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
@@ -95,8 +97,72 @@ BOOL CEquipmentStatusDemo2013App::InitInstance()
 		delete pShellManager;
 	}
 
+	TerminateApp();
+
 	// ダイアログは閉じられました。アプリケーションのメッセージ ポンプを開始しないで
 	//  アプリケーションを終了するために FALSE を返してください。
 	return FALSE;
 }
 
+
+/*============================================================================*/
+/*! アプリケーション
+
+-# アプリケーションの初期化
+
+@param
+@retval
+
+*/
+/*============================================================================*/
+void CEquipmentStatusDemo2013App::InitializeApp()
+{
+	// モジュール名からEXEが存在するパスを取得する
+	TCHAR path[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, path, sizeof(path));
+	PathRemoveFileSpec(path);
+	mAppPath = path;
+
+	// AppDataパスの作成＆取得
+	SHGetSpecialFolderPath(NULL, path, CSIDL_APPDATA, TRUE);
+	CString strPath = path;
+	strPath += _T("\\") + CString(mAppDataSystem);
+	CreateDirectory(strPath, NULL);
+	strPath += _T("\\") + CString(mAppDataDataPath);
+	CreateDirectory(strPath, NULL);
+	mAppDataPath = strPath;
+
+	//=====================================================//
+	//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+	CString logpath = path;
+	logpath += _T("\\") + CString(mAppDataSystem);
+	CreateDirectory(logpath, NULL);
+	logpath += _T("\\") + CString(mAppDataLogPath);
+	CreateDirectory(logpath, NULL);
+	logpath += _T("\\");
+	CLogTraceEx::Create(logpath, _T("CCustomEquipment"), nLogEx::debug, nLogEx::text);
+	CLogTraceEx::Write(_T("###"), _T("CCustomEquipment"), _T("Start"), _T(""), _T(""), nLogEx::info);
+	//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+	//=====================================================//
+}
+
+/*============================================================================*/
+/*! アプリケーション
+
+-# アプリケーションの終了
+
+@param
+@retval
+
+*/
+/*============================================================================*/
+void CEquipmentStatusDemo2013App::TerminateApp()
+{
+	//=====================================================//
+	//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+	CLogTraceEx::Write(_T("###"), _T("CCustomEquipment"), _T("Finish"), _T(""), _T(""), nLogEx::info);
+	CLogTraceEx::Close();
+	CLogTraceEx::Delete();
+	//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+	//=====================================================//
+}

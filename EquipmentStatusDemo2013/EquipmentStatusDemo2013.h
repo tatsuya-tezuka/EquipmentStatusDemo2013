@@ -9,7 +9,8 @@
 #endif
 
 #include "resource.h"		// メイン シンボル
-
+#include "LogTraceEx.h"
+#include "CustomDataManager.h"
 
 // CEquipmentStatusDemo2013App:
 // このクラスの実装については、EquipmentStatusDemo2013.cpp を参照してください。
@@ -19,6 +20,14 @@ class CEquipmentStatusDemo2013App : public CWinApp
 {
 public:
 	CEquipmentStatusDemo2013App();
+
+	void	InitializeApp();
+	void	TerminateApp();
+
+	/// モジュールファイルパス
+	CString					mAppPath;
+	/// AppDataパス
+	CString					mAppDataPath;
 
 // オーバーライド
 public:

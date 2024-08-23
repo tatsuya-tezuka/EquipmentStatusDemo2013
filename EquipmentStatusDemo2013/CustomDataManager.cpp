@@ -329,6 +329,288 @@ bool CCustomDataManager::setNodeTypeColor(CTreeNode* pnode, UINT type, UINT subt
 	return true;
 }
 
+
+
+
+/*============================================================================*/
+/*! カスタムデータ管理クラス
+
+-# ツリーデータ情報の保存
+
+@param		strFile	保存ファイル
+
+@retval
+*/
+/*============================================================================*/
+bool CCustomDataManager::SaveTreeData(CString strFile, CWnd* pTargetWnd/* = NULL*/)
+{
+	//=====================================================//
+	//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+	CLogTraceEx::Write(_T("***"), _T("CCustomDataManager"), _T("SaveTreeData"), _T("Start"), _T(""), nLogEx::debug);
+	//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+	//=====================================================//
+	CFile file;
+	if (file.Open(strFile, CFile::modeCreate | CFile::modeWrite | CFile::typeBinary) == NULL) {
+		//=====================================================//
+		//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+		CLogTraceEx::Write(_T("***"), _T("CCustomDataManager"), _T("SaveTreeData"), _T("Open Error"), _T(""), nLogEx::error);
+		//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+		//=====================================================//
+		return false;
+	}
+
+	CArchive mArc(&file, CArchive::store);
+	// バージョン保存
+	mArc << (UINT)EN_FILE_VERSION_MAJOR;
+
+	if (pTargetWnd == NULL) {
+		mArc << (UINT)mTreeNode.size();
+	}
+	else {
+		mArc << (UINT)1;
+	}
+
+	// 個々のデータを保存
+	vector<CTreeNode*>::iterator itr;
+	for (itr = mTreeNode.begin(); itr != mTreeNode.end(); itr++) {
+		if (pTargetWnd != NULL && pTargetWnd != (*itr)->GetWindowInfo().wnd) {
+			continue;
+		}
+		(*itr)->SaveTreeNode(mArc);
+	}
+
+	mArc.Flush();
+	mArc.Close();
+	file.Close();
+	//=====================================================//
+	//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+	CLogTraceEx::Write(_T("***"), _T("CCustomDataManager"), _T("SaveTreeData"), _T("Stop"), _T(""), nLogEx::debug);
+	//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+	//=====================================================//
+
+	return true;
+}
+
+/*============================================================================*/
+/*! ツリーノード
+
+-# ノード情報の保存
+
+@param		ar	CArchiveクラス
+
+@retval
+*/
+/*============================================================================*/
+bool CTreeNode::SaveTreeNode(CArchive& ar)
+{
+	// ウィンドウ位置情報取得
+	if (wininfo.wnd != NULL) {
+		memset(&wininfo.placement, 0, sizeof(WINDOWPLACEMENT));
+		wininfo.placement.length = sizeof(WINDOWPLACEMENT);
+		wininfo.wnd->GetWindowPlacement(&wininfo.placement);
+		//★((CCustomDetail*)wininfo.wnd)->GetHeaderWidth(wininfo.hwidth, mHeaderSize);
+	}
+
+	// ウィンドウ情報
+	ar << wininfo.type;
+	if (wininfo.type == eTreeItemType_Title) {
+		ar << CString(wininfo.title);
+		ar << wininfo.monitor;
+		ar << wininfo.placement.flags;
+		if (wininfo.wnd == NULL)
+			ar << FALSE;
+		else
+			ar << wininfo.wnd->IsWindowVisible();
+		savePoint(ar, wininfo.placement.ptMinPosition);
+		savePoint(ar, wininfo.placement.ptMaxPosition);
+		saveRect(ar, wininfo.placement.rcNormalPosition);
+		ar << (UINT)mHeaderSize;
+		for (int i = 0; i < mHeaderSize; i++) {
+			ar << wininfo.hwidth[i];
+		}
+		ar << wininfo.zorder;
+	}
+	//★wininfo.treeopen = ((CCustomDetail*)wininfo.wnd)->GetTreeExpandState(treeitem);
+	ar << wininfo.treeopen;
+
+	// 監視制御情報
+	ar << CString(monctrl.display);
+	if (wininfo.type == eTreeItemType_Item) {
+		ar << CString(monctrl.mname);
+		ar << CString(monctrl.cname);
+		ar << CString(monctrl.unit);
+		ar << monctrl.formattype;
+		ar << CString(monctrl.format);
+		ar << CString(monctrl.group);
+	}
+
+	// 色情報
+	ar << color.back;
+	ar << color.textback;
+	ar << color.text;
+	ar << color.value;
+	ar << color.unit;
+	// フォント
+	ar << color.font.lfHeight;
+	ar << color.font.lfWidth;
+	ar << color.font.lfWeight;
+	ar << CString(color.font.lfFaceName);
+
+	// 子ノードの保存
+	ar << (UINT)children.size();
+	vector<CTreeNode*>::iterator itr;
+	for (itr = children.begin(); itr != children.end(); itr++) {
+		(*itr)->SaveTreeNode(ar);
+	}
+
+	return true;
+}
+
+/*============================================================================*/
+/*! カスタムデータ管理クラス
+
+-# ツリーデータ情報の読込
+
+@param		strFile	読込ファイル
+
+@retval
+*/
+/*============================================================================*/
+bool CCustomDataManager::LoadTreeData(CString strFile, bool bClear)
+{
+	//=====================================================//
+	//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+	CLogTraceEx::Write(_T("***"), _T("CCustomDataManager"), _T("LoadTreeData"), _T("Start"), _T(""), nLogEx::debug);
+	//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+	//=====================================================//
+	CFile file;
+	if (file.Open(strFile, CFile::modeRead | CFile::typeBinary) == NULL) {
+		//=====================================================//
+		//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+		CLogTraceEx::Write(_T("***"), _T("CCustomDataManager"), _T("LoadTreeData"), _T("Open Error"), _T(""), nLogEx::error);
+		//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+		//=====================================================//
+		return false;
+	}
+
+	CArchive mArc(&file, CArchive::load);
+
+	// バージョン
+	UINT version;
+	mArc >> version;
+	if (version != EN_FILE_VERSION_MAJOR) {
+		//=====================================================//
+		//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+		CLogTraceEx::Write(_T("***"), _T("CCustomDataManager"), _T("LoadTreeData"), _T("Version Error"), _T(""), nLogEx::error);
+		//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+		//=====================================================//
+		return false;
+	}
+
+	if (bClear == true) {
+		// 現行のデータを削除する
+		DeleteAllWnd();
+		DeleteAllNode();
+	}
+
+	UINT size;
+	mArc >> size;
+	mTreeNode.reserve(size);
+	for (UINT i = 0; i < size; i++) {
+		CTreeNode* pnode = new CTreeNode((HTREEITEM)i, NULL, NULL);
+		if (pnode->LoadTreeNode(mArc) == false) {
+			delete pnode;
+			break;
+		}
+		mTreeNode.push_back(pnode);
+	}
+	mArc.Close();
+	file.Close();
+	//=====================================================//
+	//↓↓↓↓↓↓↓↓↓↓↓↓ Log ↓↓↓↓↓↓↓↓↓↓↓↓//
+	CLogTraceEx::Write(_T("***"), _T("CCustomDataManager"), _T("LoadTreeData"), _T("Stop"), _T(""), nLogEx::debug);
+	//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
+	//=====================================================//
+	return true;
+}
+/*============================================================================*/
+/*! ツリーノード
+
+-# ノード情報の読込
+
+@param		ar	CArchiveクラス
+
+@retval
+*/
+/*============================================================================*/
+bool CTreeNode::LoadTreeNode(CArchive& ar)
+{
+	CString str;
+	// ウィンドウ情報
+	ar >> wininfo.type;
+	if (wininfo.type == eTreeItemType_Title) {
+		ar >> str;
+		swprintf_s(wininfo.title, mTitleSize, _T("%s"), (LPCTSTR)str);
+		ar >> wininfo.monitor;
+		wininfo.placement.length = sizeof(WINDOWPLACEMENT);
+		ar >> wininfo.placement.flags;
+		ar >> wininfo.placement.showCmd;
+		loadPoint(ar, wininfo.placement.ptMinPosition);
+		loadPoint(ar, wininfo.placement.ptMaxPosition);
+		loadRect(ar, wininfo.placement.rcNormalPosition);
+		UINT hsize;
+		ar >> hsize;
+		for (int i = 0; i < (int)hsize; i++) {
+			ar >> wininfo.hwidth[i];
+		}
+		ar >> wininfo.zorder;
+	}
+	ar >> wininfo.treeopen;;
+
+	// 監視制御情報
+	ar >> str;
+	swprintf_s(monctrl.display, mNameSize, _T("%s"), (LPCTSTR)str);
+	if (wininfo.type == eTreeItemType_Item) {
+		ar >> str;
+		swprintf_s(monctrl.mname, mNameSize, _T("%s"), (LPCTSTR)str);
+		ar >> str;
+		swprintf_s(monctrl.cname, mNameSize, _T("%s"), (LPCTSTR)str);
+		ar >> str;
+		swprintf_s(monctrl.unit, mUnitSize, _T("%s"), (LPCTSTR)str);
+		ar >> monctrl.formattype;
+		ar >> str;
+		swprintf_s(monctrl.format, mFormatSize, _T("%s"), (LPCTSTR)str);
+		ar >> str;
+		swprintf_s(monctrl.group, mNameSize, _T("%s"), (LPCTSTR)str);
+	}
+
+	// 色情報
+	ar >> color.back;
+	ar >> color.textback;
+	ar >> color.text;
+	ar >> color.value;
+	ar >> color.unit;
+	// フォント
+	ar >> color.font.lfHeight;
+	ar >> color.font.lfWidth;
+	ar >> color.font.lfWeight;
+	ar >> str;
+	swprintf_s(color.font.lfFaceName, LF_FACESIZE, _T("%s"), (LPCTSTR)str);
+
+	// 子ノードの取得
+	UINT size;
+	ar >> size;
+	children.reserve(size);
+	for (UINT i = 0; i < size; i++) {
+		CTreeNode* child = new CTreeNode((HTREEITEM)i, NULL, NULL);
+		child->LoadTreeNode(ar);
+		children.push_back(child);
+	}
+
+	return true;
+}
+
+
 /*============================================================================*/
 /*! カスタムデータ管理クラス
 
