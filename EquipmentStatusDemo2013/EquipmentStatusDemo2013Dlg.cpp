@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(CEquipmentStatusDemo2013Dlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON_DEBUG, &CEquipmentStatusDemo2013Dlg::OnBnClickedButtonDebug)
 END_MESSAGE_MAP()
 
 
@@ -150,3 +151,11 @@ HCURSOR CEquipmentStatusDemo2013Dlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+#include "DebugDialog.h"
+
+void CEquipmentStatusDemo2013Dlg::OnBnClickedButtonDebug()
+{
+	CDebugDialog dlg;
+	dlg.DoModal();
+}
