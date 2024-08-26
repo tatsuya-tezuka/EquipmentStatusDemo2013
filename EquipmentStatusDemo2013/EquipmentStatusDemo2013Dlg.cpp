@@ -49,6 +49,7 @@ END_MESSAGE_MAP()
 
 CEquipmentStatusDemo2013Dlg::CEquipmentStatusDemo2013Dlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CEquipmentStatusDemo2013Dlg::IDD, pParent)
+	, mLoop(1)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -56,6 +57,8 @@ CEquipmentStatusDemo2013Dlg::CEquipmentStatusDemo2013Dlg(CWnd* pParent /*=NULL*/
 void CEquipmentStatusDemo2013Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_EDIT1, mLoop);
+	DDV_MinMaxUInt(pDX, mLoop, 1, 255);
 }
 
 BEGIN_MESSAGE_MAP(CEquipmentStatusDemo2013Dlg, CDialogEx)
@@ -63,6 +66,8 @@ BEGIN_MESSAGE_MAP(CEquipmentStatusDemo2013Dlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON_DEBUG, &CEquipmentStatusDemo2013Dlg::OnBnClickedButtonDebug)
+	ON_BN_CLICKED(IDC_MFCBUTTON1, &CEquipmentStatusDemo2013Dlg::OnBnClickedMfcbutton1)
+	ON_BN_CLICKED(IDC_MFCBUTTON2, &CEquipmentStatusDemo2013Dlg::OnBnClickedMfcbutton2)
 END_MESSAGE_MAP()
 
 
@@ -158,4 +163,18 @@ void CEquipmentStatusDemo2013Dlg::OnBnClickedButtonDebug()
 {
 	CDebugDialog dlg;
 	dlg.DoModal();
+}
+
+
+void CEquipmentStatusDemo2013Dlg::OnBnClickedMfcbutton1()
+{
+	UpdateData(TRUE);
+	// カスタム管理
+}
+
+void CEquipmentStatusDemo2013Dlg::OnBnClickedMfcbutton2()
+{
+	UpdateData(TRUE);
+	// デモ用カスタム画面作成
+	CCustomDetail* pitem = theApp.CreateEquipment(NULL);
 }

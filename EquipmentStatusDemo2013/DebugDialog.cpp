@@ -24,6 +24,7 @@ CDebugDialog::~CDebugDialog()
 void CDebugDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CCustomDialogBase::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LIST1, mList);
 }
 
 
@@ -42,4 +43,34 @@ BOOL CDebugDialog::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 例外 : OCX プロパティ ページは必ず FALSE を返します。
+}
+
+
+BOOL CDebugDialog::PreCreateWindow(CREATESTRUCT& cs)
+{
+	if (CCustomDialogBase::PreCreateWindow(cs) == FALSE)
+		return FALSE;
+
+	if (cs.lpszName){
+		WNDCLASS wc;
+		::GetClassInfo(AfxGetInstanceHandle(), cs.lpszClass, &wc);
+		wc.lpszClassName = _T("CDebugDialog");
+		AfxRegisterClass(&wc);
+		cs.lpszClass = wc.lpszClassName;
+	}
+
+	return TRUE;
+}
+
+BOOL CDebugDialog::OnProcSize(CWnd* pWnd, int dx, int dy)
+{
+	CRect rect;
+
+	mList.GetWindowRect(rect);
+	ScreenToClient(rect);
+	rect.right += dx;
+	rect.bottom += dy;
+	mList.MoveWindow(rect);
+	Invalidate();
+	return TRUE;
 }

@@ -52,6 +52,8 @@ public:
 
 	UINT	GetIDD() { return mIDD; }
 
+	virtual BOOL OnProcSize(CWnd* pWnd, int dx, int dy) { return FALSE; }
+
 protected:
 
 	/* ------------------------------------------------------------------------------------ */

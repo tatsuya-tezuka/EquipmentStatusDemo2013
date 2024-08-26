@@ -166,3 +166,34 @@ void CEquipmentStatusDemo2013App::TerminateApp()
 	//↑↑↑↑↑↑↑↑↑↑↑↑ Log ↑↑↑↑↑↑↑↑↑↑↑↑//
 	//=====================================================//
 }
+
+/*============================================================================*/
+/*! アプリケーション
+
+-# 設備詳細ウィンドウの作成
+
+@param		pnode		ノード情報
+@retval
+
+*/
+/*============================================================================*/
+CCustomDetail* CEquipmentStatusDemo2013App::CreateEquipment(CTreeNode* pnode)
+{
+	// 設備詳細画面の作成
+	CCustomDetail *pitem = new CCustomDetail(theApp.GetMainWnd(), (pnode == NULL) ? false : true);
+	if (pnode != NULL){
+		pnode->GetWindowInfo().wnd = pitem;
+		pnode->GetWindowInfo().manager = &mCustomManager;
+	}
+	// 設備詳細画面の作成
+	pitem->Create(IDD_DIALOG_EQDETAIL, theApp.GetMainWnd());
+	pitem->ShowWindow((pnode == NULL) ? SW_SHOW : pnode->GetWindowInfo().placement.showCmd);
+
+	// 管理ウィンドウの設定
+	if (pnode == NULL){
+		CTreeNode* pnodeitem = theApp.GetDataManager().SearchWndNode(pitem);
+		pnodeitem->GetWindowInfo().wnd = pitem;
+		pnodeitem->GetWindowInfo().manager = &mCustomManager;
+	}
+	return pitem;
+}

@@ -39,6 +39,28 @@ static const COLORREF mDragTextColor = RGB(0, 0, 0);
 static const TCHAR* mCOntrolSignString = { _T("#CNTL#") };
 static const TCHAR* mCOntrolSignStringDisplay = { _T("制御") };
 
+static const int mMonMax = 5000;			// 監視の最大数
+static const int mCtrlMax = 5000;			// 制御の最大数
+
+/// 各種メッセージID
+enum eUserMessage{
+	eUserMessage_Manger_New = (WM_USER + 1),
+	eUserMessage_Manager_Update,
+	eUserMessage_Manager_Delete,
+	eUserMessage_Manager_ResizeFit,
+	eUserMessage_Manager_Reset,
+	eUserMessage_Manager_Grid,
+
+	eUserMessage_Drag_Select,
+	eUserMessage_Drag_DropTarget,
+	eUserMessage_Drag_GetIndex,
+
+	eUserMessage_TreeMonEventFirst = (WM_USER + 100),
+	eUserMessage_TreeMonEventLast = (eUserMessage_TreeMonEventFirst + mMonMax),
+	eUserMessage_TreeCtrlEventFirst = (eUserMessage_TreeMonEventLast + 1),
+	eUserMessage_TreeCtrlEventLast = (eUserMessage_TreeCtrlEventFirst + mCtrlMax),
+};
+
 /// ツリーデータ
 enum eTreeItemType{
 	eTreeItemType_Window = 0x00000000,

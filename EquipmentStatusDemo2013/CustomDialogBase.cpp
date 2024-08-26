@@ -72,6 +72,9 @@ void CCustomDialogBase::OnSize(UINT nType, int cx, int cy)
 	CWnd *pWnd;
 	DWORD info;
 	WORD anchore;
+	TCHAR buf[80];
+
+	::GetClassNameW(m_hWnd, buf, 80);
 
 	vector<DWORD>::iterator itr;
 	for (itr = mControl.begin(); itr != mControl.end(); itr++){
@@ -98,9 +101,10 @@ void CCustomDialogBase::OnSize(UINT nType, int cx, int cy)
 		else if (anchore & ANCHORE_BOTTOM)
 			rect.OffsetRect(0, dy);
 
-		// 特定のコントロールを自前でリサイズする場合は以下を実行しないで
-		// 特定コントロールクラス関数を呼び出してリサイズしてください
-		pWnd->MoveWindow(rect);
+		// 特定のコントロールを自前でリサイズする場合は以下のOnProcSizeをオーバーライドしてください。
+		if (OnProcSize(pWnd, dx, dy) == FALSE){
+			pWnd->MoveWindow(rect);
+		}
 	}
 
 	mSaveCx = cx;

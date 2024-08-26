@@ -31,4 +31,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedButtonDebug();
+	UINT mLoop;
+	afx_msg void OnBnClickedMfcbutton1();
+	afx_msg void OnBnClickedMfcbutton2();
 };

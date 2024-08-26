@@ -48,7 +48,7 @@
 using namespace std;
 
 
-
+#define _DEMO		1
 
 
 #ifdef _UNICODE
