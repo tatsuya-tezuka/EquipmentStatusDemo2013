@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxbutton.h"
 
 
 // CEquipmentStatusDemo2013Dlg ダイアログ
@@ -34,4 +35,6 @@ public:
 	UINT mLoop;
 	afx_msg void OnBnClickedMfcbutton1();
 	afx_msg void OnBnClickedMfcbutton2();
+	CMFCButton mCustomManager;
+	CMFCButton mCustomDetail;
 };

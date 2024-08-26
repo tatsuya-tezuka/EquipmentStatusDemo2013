@@ -59,6 +59,8 @@ void CEquipmentStatusDemo2013Dlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT1, mLoop);
 	DDV_MinMaxUInt(pDX, mLoop, 1, 255);
+	DDX_Control(pDX, IDC_MFCBUTTON1, mCustomManager);
+	DDX_Control(pDX, IDC_MFCBUTTON2, mCustomDetail);
 }
 
 BEGIN_MESSAGE_MAP(CEquipmentStatusDemo2013Dlg, CDialogEx)
@@ -103,6 +105,14 @@ BOOL CEquipmentStatusDemo2013Dlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
 	// TODO: 初期化をここに追加します。
+	mCustomManager.EnableWindowsTheming(FALSE);
+	mCustomManager.m_nFlatStyle = CMFCButton::BUTTONSTYLE_FLAT;
+	mCustomManager.SetFaceColor(RGB(0, 0, 192), true);
+	mCustomManager.SetTextColor(RGB(255, 255, 255));
+	mCustomDetail.EnableWindowsTheming(FALSE);
+	mCustomDetail.m_nFlatStyle = CMFCButton::BUTTONSTYLE_FLAT;
+	mCustomDetail.SetFaceColor(RGB(0, 0, 192), true);
+	mCustomDetail.SetTextColor(RGB(255, 255, 255));
 
 	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
